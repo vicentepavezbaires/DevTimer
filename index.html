@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DevTimer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #FFFFFF;
+            color: #272E34;
+        }
+        h1 {
+            color: #F66135;
+        }
+        #timer {
+            font-size: 48px;
+            font-weight: bold;
+            color: #F66135;
+            margin: 20px 0;
+        }
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        button {
+            padding: 10px;
+            font-size: 24px;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            color: #FFFFFF;
+            background-color: #272E34;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        button:hover {
+            background-color: #241C19;
+        }
+        button svg {
+            width: 24px;
+            height: 24px;
+        }
+        input, #deadline {
+            font-size: 16px;
+            text-align: center;
+            margin: 10px;
+        }
+        #deadline {
+            width: 140px;
+        }
+        #statistics, #task-history {
+            margin-top: 20px;
+            text-align: center;
+        }
+        #completion-message {
+            font-size: 18px;
+            color: #F66135;
+            margin-top: 20px;
+        }
+        #taskName {
+            width: 150px;
+        }
+    </style>
+</head>
+<body>
+    <h1>DevTimer</h1>
+    <div>
+        <label for="taskName">Task Name: </label>
+        <input type="text" id="taskName" placeholder="Enter task name">
+        <label for="workTime">Work Time (min): </label>
+        <input type="number" id="workTime" value="25" min="1">
+        <label for="restTime">Break Time (min): </label>
+        <input type="number" id="restTime" value="5" min="1">
+        <label for="deadline">Deadline: </label>
+        <input type="date" id="deadline">
+    </div>
+    <div id="mode">Work Time</div>
+    <div id="timer">25:00</div>
+
+    <div class="button-container">
+        <button onclick="playTimer()" aria-label="Play">
+            <svg fill="#FFFFFF" viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+        </button>
+        <button onclick="stopTimer()" aria-label="Pause">
+            <svg fill="#FFFFFF" viewBox="0 0 24 24"><rect x="5" y="3" width="4" height="18"/><rect x="15" y="3" width="4" height="18"/></svg>
+        </button>
+        <button onclick="checkTimer()" aria-label="Complete">
+            <svg fill="#FFFFFF" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12" style="fill:none;stroke:white;stroke-width:2"/></svg>
+        </button>
+    </div>
+
+    <div id="completion-message"></div>
+    <div id="statistics"></div>
+    <div id="task-history">
+        <h3>Completed Tasks</h3>
+        <ul id="taskList"></ul>
+    </div>
+
+    <script>
+        let remainingTime;
+        let workTime;
+        let restTime;
+        let timerInterval = null;
+        let isPaused = false;
+        let isWorkTime = true;
+        let workTimersCompleted = 0;
+        let breakTimersCompleted = 0;
+        let totalTimeSpent = 0;
+        let totalDaysSpent = 0;
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(remainingTime / 60);
+            const seconds = remainingTime % 60;
+            document.getElementById('timer').textContent = 
+                `${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+        }
+
+        function playTimer() {
+            if (!timerInterval) { 
+                remainingTime = isWorkTime ? workTime : restTime;
+                document.getElementById('mode').textContent = isWorkTime ? "Work Time" : "Break Time";
+            }
+            
+            isPaused = false;
+            
+            if (!timerInterval) {
+                timerInterval = setInterval(() => {
+                    if (!isPaused && remainingTime > 0) {
+                        remainingTime--;
+                        updateTimerDisplay();
+                        totalTimeSpent++;
+                    } else if (remainingTime === 0) {
+                        clearInterval(timerInterval);
+                        timerInterval = null;
+                        if (isWorkTime) {
+                            workTimersCompleted++;
+                        } else {
+                            breakTimersCompleted++;
+                        }
+                        isWorkTime = !isWorkTime;
+                        playTimer();
+                    }
+                }, 1000);
+            }
+        }
+
+        function stopTimer() {
+            isPaused = true; 
+        }
+
+        function checkTimer() {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            calculateStatistics();
+            showCompletionMessage();
+            logCompletedTask();
+        }
+
+        function calculateStatistics() {
+            let deadlineDate = new Date(document.getElementById('deadline').value);
+            let currentDate = new Date();
+            let daysBeforeDeadline = Math.ceil((deadlineDate - currentDate) / (1000 * 60 * 60 * 24));
+            totalDaysSpent = Math.ceil(totalTimeSpent / (60 * 60 * 24)); 
+
+            document.getElementById('statistics').innerHTML = `
+                <p>Work Timers Completed: ${workTimersCompleted}</p>
+                <p>Break Timers Completed: ${breakTimersCompleted}</p>
+                <p>Total Time Spent: ${Math.floor(totalTimeSpent / 60)} minutes</p>
+                <p>Days Before Deadline: ${daysBeforeDeadline}</p>
+                <p>Total Days Spent Using Timer: ${totalDaysSpent}</p>
+            `;
+        }
+
+        function showCompletionMessage() {
+            document.getElementById('completion-message').textContent = "Nice! See you on your next task. Here are your stats on this one!";
+        }
+
+        function logCompletedTask() {
+            let taskName = document.getElementById('taskName').value || "Unnamed Task";
+            let totalMinutes = Math.floor(totalTimeSpent / 60);
+            let taskRecord = `${taskName} - ${totalMinutes} minutes`;
+
+            let li = document.createElement("li");
+            li.textContent = taskRecord;
+            document.getElementById('taskList').appendChild(li);
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            isWorkTime = true;
+            remainingTime = workTime;
+            document.getElementById('mode').textContent = "Work Time";
+            updateTimerDisplay();
+        }
+
+        document.getElementById('workTime').addEventListener('input', () => {
+            workTime = parseInt(document.getElementById('workTime').value) * 60;
+            resetTimer();
+        });
+        
+        document.getElementById('restTime').addEventListener('input', () => {
+            restTime = parseInt(document.getElementById('restTime').value) * 60;
+            resetTimer();
+        });
+
+        // Initialize values
+        workTime = parseInt(document.getElementById('workTime').value) * 60;
+        restTime = parseInt(document.getElementById('restTime').value) * 60;
+        remainingTime = workTime;
+        updateTimerDisplay();
+    </script>
+</body>
+</html>

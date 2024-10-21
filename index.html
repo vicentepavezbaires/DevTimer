@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DevTimer</title>
     <style>
-        /* Ajuste del diseño */
         body {
             font-family: 'Outfit', sans-serif;
             background-color: #FFFFFF;
@@ -13,64 +12,87 @@
             text-align: center;
             padding: 20px;
         }
+
         h1 {
             color: #F66135;
-            font-size: 24px;
+            font-size: 28px;
             margin-bottom: 10px;
         }
+
         .container {
             margin: auto;
-            max-width: 400px;
+            max-width: 320px;
             padding: 20px;
-            border: 2px solid #757575;
+            border: 1px solid #757575;
             border-radius: 10px;
         }
-        .timer {
-            font-size: 36px;
-            margin: 10px 0;
+
+        .section {
+            margin-bottom: 20px;
         }
+
+        .section p {
+            color: #F66135;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .timer {
+            font-size: 30px;
+            margin: 10px 0;
+            color: #757575;
+        }
+
         label {
             font-size: 16px;
-            color: #F66135;
             display: block;
             margin-bottom: 5px;
             text-align: left;
+            color: #F66135;
         }
+
         input {
             width: 100%;
-            padding: 10px;
+            padding: 8px;
             margin: 10px 0;
             border: 1px solid #ddd;
             border-radius: 5px;
             font-size: 16px;
+            text-align: center;
         }
+
         button {
             width: 100%;
-            padding: 10px;
-            font-size: 18px;
+            padding: 12px;
+            font-size: 16px;
             border: none;
             margin: 10px 0;
             cursor: pointer;
             border-radius: 5px;
         }
+
         button#pause {
             background-color: #F66135;
             color: white;
         }
+
         button#resume {
             background-color: #757575;
             color: white;
         }
+
         button#done {
             background-color: #4EA57D;
             color: white;
         }
-        .section {
-            margin-bottom: 20px;
+
+        button#start {
+            background-color: #F66135;
+            color: white;
         }
+
     </style>
     <script>
-        // Función para obtener los parámetros de la URL
         function getUrlParams() {
             const params = new URLSearchParams(window.location.search);
             return {
@@ -80,19 +102,17 @@
             };
         }
 
-        // Inicializa el temporizador con los valores pasados por URL
         function initializeTimer() {
             const params = getUrlParams();
             document.getElementById('taskName').innerText = params.taskName || 'No Task';
-            document.getElementById('workTime').value = params.workTime || '25'; // Valor por defecto: 25 min
-            document.getElementById('restTime').value = params.restTime || '5';  // Valor por defecto: 5 min
+            document.getElementById('workTime').value = params.workTime || '25';
+            document.getElementById('restTime').value = params.restTime || '5';
         }
 
         let workInterval, restInterval;
 
-        // Función para iniciar el temporizador de trabajo
         function startTimer() {
-            let workTime = parseInt(document.getElementById('workTime').value) * 60; // convierte minutos a segundos
+            let workTime = parseInt(document.getElementById('workTime').value) * 60;
             let restTime = parseInt(document.getElementById('restTime').value) * 60;
 
             document.getElementById('workTimeDisplay').innerText = formatTime(workTime);
@@ -143,19 +163,16 @@
     <div class="container">
         <h1 id="taskName">No Task</h1>
 
-        <!-- Temporizador de sesión de trabajo -->
         <div class="section">
             <p>Work Session Remaining:</p>
             <div class="timer" id="workTimeDisplay">00:00</div>
         </div>
 
-        <!-- Temporizador de descanso -->
         <div class="section">
             <p>Rest Time Remaining:</p>
             <div class="timer" id="restTimeDisplay">00:00</div>
         </div>
 
-        <!-- Inputs de tiempos (rellenados con los valores de la URL si existen) -->
         <div class="section">
             <label for="workTime">Work Time (minutes):</label>
             <input type="text" id="workTime" value="25">
@@ -166,7 +183,6 @@
             <input type="text" id="restTime" value="5">
         </div>
 
-        <!-- Botones de control del temporizador -->
         <button id="start" onclick="startTimer()">Start Timer</button>
         <button id="pause" onclick="pauseTimer()">Pause</button>
         <button id="resume" onclick="startTimer()">Resume</button>

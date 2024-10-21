@@ -5,9 +5,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DevTimer</title>
     <style>
-        /* Aquí mantén tus estilos actuales o añade más */
+        /* Estilos básicos para el temporizador */
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #FFFFFF;
+            color: #272E34;
+        }
+        h1 {
+            color: #F66135;
+        }
+        .container {
+            text-align: center;
+            margin-top: 50px;
+        }
+        .timer {
+            font-size: 48px;
+            margin: 20px 0;
+        }
+        button {
+            background-color: #F66135;
+            border: none;
+            padding: 10px 20px;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        button#resume {
+            background-color: #757575;
+        }
+        button#done {
+            background-color: #4EA57D;
+        }
     </style>
     <script>
+        // Función para obtener parámetros de la URL
         function getUrlParams() {
             const params = new URLSearchParams(window.location.search);
             return {
@@ -17,36 +49,97 @@
             };
         }
 
+        // Función que inicializa el temporizador
         function initializeTimer() {
             const params = getUrlParams();
             document.getElementById('taskName').innerText = params.taskName || 'No Task';
             document.getElementById('workTime').value = params.workTime || '25'; // Valor por defecto 25 min
-            document.getElementById('restTime').value = params.restTime || '5'; // Valor por defecto 5 min
+            document.getElementById('restTime').value = params.restTime || '5';  // Valor por defecto 5 min
 
-            // Aquí puedes insertar tu lógica de temporizador si ya tienes algo establecido
-            // Por ejemplo, iniciar el temporizador o manipular los valores del input
+            // Aquí inicia el temporizador o se pueden manipular los valores de los inputs si es necesario
+        }
+
+        // Función para el temporizador (ejemplo básico)
+        let workInterval, restInterval;
+
+        function startTimer() {
+            let workTime = parseInt(document.getElementById('workTime').value) * 60; // minutos a segundos
+            let restTime = parseInt(document.getElementById('restTime').value) * 60;
+
+            document.getElementById('workTimeDisplay').innerText = formatTime(workTime);
+            workInterval = setInterval(() => {
+                workTime--;
+                document.getElementById('workTimeDisplay').innerText = formatTime(workTime);
+                if (workTime <= 0) {
+                    clearInterval(workInterval);
+                    alert('Work session complete! Starting rest time.');
+                    startRestTimer(restTime);
+                }
+            }, 1000); // Temporizador cuenta cada segundo
+        }
+
+        function startRestTimer(restTime) {
+            document.getElementById('restTimeDisplay').innerText = formatTime(restTime);
+            restInterval = setInterval(() => {
+                restTime--;
+                document.getElementById('restTimeDisplay').innerText = formatTime(restTime);
+                if (restTime <= 0) {
+                    clearInterval(restInterval);
+                    alert('Rest session complete!');
+                }
+            }, 1000);
+        }
+
+        function pauseTimer() {
+            clearInterval(workInterval);
+            clearInterval(restInterval);
+        }
+
+        function resumeTimer() {
+            // Aquí podrías implementar la lógica para resumir el temporizador si está pausado
+        }
+
+        function completeTask() {
+            clearInterval(workInterval);
+            clearInterval(restInterval);
+            alert('Task completed!');
+        }
+
+        function formatTime(seconds) {
+            const min = Math.floor(seconds / 60);
+            const sec = seconds % 60;
+            return `${min}:${sec < 10 ? '0' : ''}${sec}`;
         }
 
         window.onload = initializeTimer;
     </script>
 </head>
 <body>
-    <h1>Task: <span id="taskName">No Task</span></h1>
-    <!-- Suponiendo que tu temporizador tiene un input para el tiempo de trabajo y descanso -->
-    <label for="workTime">Work Time: </label>
-    <input type="text" id="workTime" value="25"><br>
+    <div class="container">
+        <h1 id="taskName">Task Name</h1>
 
-    <label for="restTime">Rest Time: </label>
-    <input type="text" id="restTime" value="5"><br>
+        <!-- Work Session Section -->
+        <div class="timer">
+            <p>Work Session Remaining: <span id="workTimeDisplay">00:00</span></p>
+        </div>
 
-    <button onclick="startTimer()">Start Timer</button>
-    
-    <script>
-        // Aquí pon tu código actual para manejar el temporizador
-        function startTimer() {
-            // Código del temporizador...
-            console.log('Timer started');
-        }
-    </script>
+        <!-- Rest Session Section -->
+        <div class="timer">
+            <p>Rest Time Remaining: <span id="restTimeDisplay">00:00</span></p>
+        </div>
+
+        <!-- Inputs (prellenados con valores de la URL si existen) -->
+        <label for="workTime">Work Time (minutes): </label>
+        <input type="text" id="workTime" value="25"><br>
+
+        <label for="restTime">Rest Time (minutes): </label>
+        <input type="text" id="restTime" value="5"><br><br>
+
+        <!-- Botones de control -->
+        <button onclick="startTimer()">Start</button>
+        <button id="resume" onclick="resumeTimer()">Resume</button>
+        <button id="pause" onclick="pauseTimer()">Pause</button>
+        <button id="done" onclick="completeTask()">Done</button>
+    </div>
 </body>
 </html>

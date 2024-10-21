@@ -3,192 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DevTimer</title>
+    <title>DevTimer - Running Task</title>
     <style>
         body {
             font-family: 'Outfit', sans-serif;
+            text-align: center;
             background-color: #FFFFFF;
             color: #272E34;
-            text-align: center;
-            padding: 20px;
-            margin: 0;
         }
-
+        .container {
+            width: 350px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 2px solid #757575;
+            border-radius: 15px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+        }
         h1 {
             color: #F66135;
-            font-size: 28px;
-            margin-bottom: 10px;
+            font-size: 24px;
         }
-
-        .container {
-            margin: 20px auto;
-            max-width: 320px;
-            padding: 20px;
-            border: 1px solid #757575;
-            border-radius: 15px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .section {
-            margin-bottom: 25px;
-        }
-
-        .section p {
-            color: #F66135;
-            font-size: 18px;
-            margin-bottom: 5px;
-        }
-
-        .timer {
-            font-size: 30px;
+        .session-time, .rest-time, .due-time {
             margin: 15px 0;
-            color: #757575;
-        }
-
-        label {
-            font-size: 16px;
-            display: block;
-            margin-bottom: 10px;
-            text-align: left;
+            font-size: 22px;
             color: #F66135;
         }
-
-        input {
-            width: 100%;
-            padding: 8px;
-            margin: 10px 0;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 16px;
-            text-align: center;
+        .timer-display {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            color: #272E34;
         }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            font-size: 16px;
+        .btn {
+            width: 80%;
+            padding: 10px;
+            font-size: 18px;
+            margin: 10px 0;
             border: none;
-            margin: 10px 0;
+            border-radius: 10px;
             cursor: pointer;
-            border-radius: 5px;
         }
-
-        button#pause {
-            background-color: #F66135;
-            color: white;
-        }
-
-        button#resume {
-            background-color: #757575;
-            color: white;
-        }
-
-        button#done {
-            background-color: #4EA57D;
-            color: white;
-        }
-
-        button#start {
-            background-color: #F66135;
-            color: white;
-        }
-
+        .start-btn { background-color: #F66135; color: white; }
+        .pause-btn { background-color: #F66135; color: white; }
+        .resume-btn { background-color: #757575; color: white; }
+        .done-btn { background-color: #4EA57D; color: white; }
     </style>
-    <script>
-        function getUrlParams() {
-            const params = new URLSearchParams(window.location.search);
-            return {
-                taskName: params.get('taskName'),
-                workTime: params.get('workTime'),
-                restTime: params.get('restTime')
-            };
-        }
-
-        function initializeTimer() {
-            const params = getUrlParams();
-            document.getElementById('taskName').innerText = params.taskName || 'No Task';
-            document.getElementById('workTime').value = params.workTime || '25';
-            document.getElementById('restTime').value = params.restTime || '5';
-        }
-
-        let workInterval, restInterval;
-
-        function startTimer() {
-            let workTime = parseInt(document.getElementById('workTime').value) * 60;
-            let restTime = parseInt(document.getElementById('restTime').value) * 60;
-
-            document.getElementById('workTimeDisplay').innerText = formatTime(workTime);
-            workInterval = setInterval(() => {
-                workTime--;
-                document.getElementById('workTimeDisplay').innerText = formatTime(workTime);
-                if (workTime <= 0) {
-                    clearInterval(workInterval);
-                    alert('Work session complete! Starting rest time.');
-                    startRestTimer(restTime);
-                }
-            }, 1000);
-        }
-
-        function startRestTimer(restTime) {
-            document.getElementById('restTimeDisplay').innerText = formatTime(restTime);
-            restInterval = setInterval(() => {
-                restTime--;
-                document.getElementById('restTimeDisplay').innerText = formatTime(restTime);
-                if (restTime <= 0) {
-                    clearInterval(restInterval);
-                    alert('Rest session complete!');
-                }
-            }, 1000);
-        }
-
-        function pauseTimer() {
-            clearInterval(workInterval);
-            clearInterval(restInterval);
-        }
-
-        function completeTask() {
-            clearInterval(workInterval);
-            clearInterval(restInterval);
-            alert('Task completed!');
-        }
-
-        function formatTime(seconds) {
-            const min = Math.floor(seconds / 60);
-            const sec = seconds % 60;
-            return `${min}:${sec < 10 ? '0' : ''}${sec}`;
-        }
-
-        window.onload = initializeTimer;
-    </script>
 </head>
 <body>
+
     <div class="container">
-        <h1 id="taskName">No Task</h1>
-
-        <div class="section">
-            <p>Work Session Remaining:</p>
-            <div class="timer" id="workTimeDisplay">00:00</div>
+        <h1>No Task</h1>
+        <div class="session-time">
+            Work Session Remaining:
         </div>
-
-        <div class="section">
-            <p>Rest Time Remaining:</p>
-            <div class="timer" id="restTimeDisplay">00:00</div>
+        <div class="timer-display" id="work-timer">
+            00:00
         </div>
-
-        <div class="section">
-            <label for="workTime">Work Time (minutes):</label>
-            <input type="text" id="workTime" value="25">
+        <div class="rest-time">
+            Rest Time Remaining:
         </div>
-
-        <div class="section">
-            <label for="restTime">Rest Time (minutes):</label>
-            <input type="text" id="restTime" value="5">
+        <div class="timer-display" id="rest-timer">
+            00:00
         </div>
-
-        <button id="start" onclick="startTimer()">Start Timer</button>
-        <button id="pause" onclick="pauseTimer()">Pause</button>
-        <button id="resume" onclick="startTimer()">Resume</button>
-        <button id="done" onclick="completeTask()">Done</button>
+        <div class="btn start-btn" id="start-btn">Start Timer</div>
+        <div class="btn pause-btn" id="pause-btn">Pause</div>
+        <div class="btn resume-btn" id="resume-btn">Resume</div>
+        <div class="btn done-btn" id="done-btn">Done</div>
     </div>
+
+    <script>
+        // Timer logic
+        let workTime = 25;
+        let restTime = 5;
+        let workInterval, restInterval;
+
+        const workTimerDisplay = document.getElementById('work-timer');
+        const restTimerDisplay = document.getElementById('rest-timer');
+        const startBtn = document.getElementById('start-btn');
+        const pauseBtn = document.getElementById('pause-btn');
+        const resumeBtn = document.getElementById('resume-btn');
+        const doneBtn = document.getElementById('done-btn');
+
+        function startTimer() {
+            clearInterval(workInterval);
+            clearInterval(restInterval);
+            workTime = 25;  // Reset work timer
+            restTime = 5;  // Reset rest timer
+            updateTimerDisplay();
+            workInterval = setInterval(() => {
+                if (workTime > 0) {
+                    workTime--;
+                    updateTimerDisplay();
+                } else {
+                    clearInterval(workInterval);
+                    startRestTimer();
+                }
+            }, 60000); // 1 minute intervals
+        }
+
+        function startRestTimer() {
+            restInterval = setInterval(() => {
+                if (restTime > 0) {
+                    restTime--;
+                    updateTimerDisplay();
+                } else {
+                    clearInterval(restInterval);
+                    alert('Work session completed!');
+                }
+            }, 60000); // 1 minute intervals
+        }
+
+        function updateTimerDisplay() {
+            workTimerDisplay.textContent = workTime < 10 ? '0' + workTime + ':00' : workTime + ':00';
+            restTimerDisplay.textContent = restTime < 10 ? '0' + restTime + ':00' : restTime + ':00';
+        }
+
+        startBtn.addEventListener('click', startTimer);
+        pauseBtn.addEventListener('click', () => {
+            clearInterval(workInterval);
+            clearInterval(restInterval);
+        });
+        resumeBtn.addEventListener('click', startTimer);
+        doneBtn.addEventListener('click', () => {
+            clearInterval(workInterval);
+            clearInterval(restInterval);
+            alert('Task marked as done!');
+        });
+
+    </script>
+
 </body>
 </html>

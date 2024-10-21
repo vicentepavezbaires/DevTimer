@@ -18,15 +18,16 @@
             border: 2px solid #757575;
             border-radius: 15px;
             box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box; /* Asegura que el relleno y el borde se incluyan en el ancho total */
         }
         h1 {
             color: #F66135;
             font-size: 24px;
         }
-        .session-time, .rest-time, .due-time {
+        .session-time, .rest-time {
             margin: 15px 0;
             font-size: 22px;
-            color: #272E34;  /* Negro para los subtítulos */
+            color: #272E34;
         }
         .timer-display {
             font-size: 36px;
@@ -38,12 +39,13 @@
             width: 80%;
             padding: 10px;
             font-size: 18px;
-            margin: 10px 0;
+            margin: 10px auto;
             border: none;
             border-radius: 10px;
             cursor: pointer;
+            display: block;
         }
-        .start-btn { background-color: #272E34; color: white; } /* Botón negro para Start */
+        .start-btn { background-color: #272E34; color: white; }
         .pause-btn { background-color: #F66135; color: white; }
         .resume-btn { background-color: #757575; color: white; }
         .done-btn { background-color: #4EA57D; color: white; }
@@ -72,7 +74,7 @@
     </div>
 
     <script>
-        // Lógica de temporizador
+        // Timer logic
         let workTime = 25;
         let restTime = 5;
         let workInterval, restInterval;
@@ -87,8 +89,8 @@
         function startTimer() {
             clearInterval(workInterval);
             clearInterval(restInterval);
-            workTime = 25;  // Reiniciar temporizador de trabajo
-            restTime = 5;  // Reiniciar temporizador de descanso
+            workTime = 25;  // Reset work timer
+            restTime = 5;  // Reset rest timer
             updateTimerDisplay();
             workInterval = setInterval(() => {
                 if (workTime > 0) {
@@ -98,7 +100,7 @@
                     clearInterval(workInterval);
                     startRestTimer();
                 }
-            }, 60000); // Intervalo de 1 minuto
+            }, 60000); // 1 minute intervals
         }
 
         function startRestTimer() {
@@ -110,7 +112,7 @@
                     clearInterval(restInterval);
                     alert('Work session completed!');
                 }
-            }, 60000); // Intervalo de 1 minuto
+            }, 60000); // 1 minute intervals
         }
 
         function updateTimerDisplay() {

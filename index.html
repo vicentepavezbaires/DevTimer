@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DevTimer</title>
     <style>
-        /* Mantener el diseño básico anterior */
+        /* Ajuste del diseño */
         body {
             font-family: 'Outfit', sans-serif;
             background-color: #FFFFFF;
@@ -15,7 +15,8 @@
         }
         h1 {
             color: #F66135;
-            font-size: 32px;
+            font-size: 24px;
+            margin-bottom: 10px;
         }
         .container {
             margin: auto;
@@ -29,8 +30,11 @@
             margin: 10px 0;
         }
         label {
-            font-size: 18px;
+            font-size: 16px;
             color: #F66135;
+            display: block;
+            margin-bottom: 5px;
+            text-align: left;
         }
         input {
             width: 100%;
@@ -38,13 +42,14 @@
             margin: 10px 0;
             border: 1px solid #ddd;
             border-radius: 5px;
+            font-size: 16px;
         }
         button {
-            width: 45%;
+            width: 100%;
             padding: 10px;
             font-size: 18px;
             border: none;
-            margin: 10px;
+            margin: 10px 0;
             cursor: pointer;
             border-radius: 5px;
         }
@@ -59,6 +64,9 @@
         button#done {
             background-color: #4EA57D;
             color: white;
+        }
+        .section {
+            margin-bottom: 20px;
         }
     </style>
     <script>
@@ -133,24 +141,30 @@
 </head>
 <body>
     <div class="container">
-        <h1>Task: <span id="taskName">No Task</span></h1>
+        <h1 id="taskName">No Task</h1>
 
         <!-- Temporizador de sesión de trabajo -->
-        <div class="timer">
-            <p>Work Session Remaining: <span id="workTimeDisplay">00:00</span></p>
+        <div class="section">
+            <p>Work Session Remaining:</p>
+            <div class="timer" id="workTimeDisplay">00:00</div>
         </div>
 
         <!-- Temporizador de descanso -->
-        <div class="timer">
-            <p>Rest Time Remaining: <span id="restTimeDisplay">00:00</span></p>
+        <div class="section">
+            <p>Rest Time Remaining:</p>
+            <div class="timer" id="restTimeDisplay">00:00</div>
         </div>
 
         <!-- Inputs de tiempos (rellenados con los valores de la URL si existen) -->
-        <label for="workTime">Work Time (minutes): </label>
-        <input type="text" id="workTime" value="25"><br>
+        <div class="section">
+            <label for="workTime">Work Time (minutes):</label>
+            <input type="text" id="workTime" value="25">
+        </div>
 
-        <label for="restTime">Rest Time (minutes): </label>
-        <input type="text" id="restTime" value="5"><br><br>
+        <div class="section">
+            <label for="restTime">Rest Time (minutes):</label>
+            <input type="text" id="restTime" value="5">
+        </div>
 
         <!-- Botones de control del temporizador -->
         <button id="start" onclick="startTimer()">Start Timer</button>

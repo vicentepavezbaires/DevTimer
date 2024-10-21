@@ -5,41 +5,64 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DevTimer</title>
     <style>
-        /* Estilos básicos para el temporizador */
+        /* Mantener el diseño básico anterior */
         body {
             font-family: 'Outfit', sans-serif;
             background-color: #FFFFFF;
             color: #272E34;
+            text-align: center;
+            padding: 20px;
         }
         h1 {
             color: #F66135;
+            font-size: 32px;
         }
         .container {
-            text-align: center;
-            margin-top: 50px;
+            margin: auto;
+            max-width: 400px;
+            padding: 20px;
+            border: 2px solid #757575;
+            border-radius: 10px;
         }
         .timer {
-            font-size: 48px;
-            margin: 20px 0;
+            font-size: 36px;
+            margin: 10px 0;
+        }
+        label {
+            font-size: 18px;
+            color: #F66135;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
         }
         button {
-            background-color: #F66135;
+            width: 45%;
+            padding: 10px;
+            font-size: 18px;
             border: none;
-            padding: 10px 20px;
-            color: white;
-            font-size: 20px;
-            cursor: pointer;
             margin: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button#pause {
+            background-color: #F66135;
+            color: white;
         }
         button#resume {
             background-color: #757575;
+            color: white;
         }
         button#done {
             background-color: #4EA57D;
+            color: white;
         }
     </style>
     <script>
-        // Función para obtener parámetros de la URL
+        // Función para obtener los parámetros de la URL
         function getUrlParams() {
             const params = new URLSearchParams(window.location.search);
             return {
@@ -49,21 +72,19 @@
             };
         }
 
-        // Función que inicializa el temporizador
+        // Inicializa el temporizador con los valores pasados por URL
         function initializeTimer() {
             const params = getUrlParams();
             document.getElementById('taskName').innerText = params.taskName || 'No Task';
-            document.getElementById('workTime').value = params.workTime || '25'; // Valor por defecto 25 min
-            document.getElementById('restTime').value = params.restTime || '5';  // Valor por defecto 5 min
-
-            // Aquí inicia el temporizador o se pueden manipular los valores de los inputs si es necesario
+            document.getElementById('workTime').value = params.workTime || '25'; // Valor por defecto: 25 min
+            document.getElementById('restTime').value = params.restTime || '5';  // Valor por defecto: 5 min
         }
 
-        // Función para el temporizador (ejemplo básico)
         let workInterval, restInterval;
 
+        // Función para iniciar el temporizador de trabajo
         function startTimer() {
-            let workTime = parseInt(document.getElementById('workTime').value) * 60; // minutos a segundos
+            let workTime = parseInt(document.getElementById('workTime').value) * 60; // convierte minutos a segundos
             let restTime = parseInt(document.getElementById('restTime').value) * 60;
 
             document.getElementById('workTimeDisplay').innerText = formatTime(workTime);
@@ -75,7 +96,7 @@
                     alert('Work session complete! Starting rest time.');
                     startRestTimer(restTime);
                 }
-            }, 1000); // Temporizador cuenta cada segundo
+            }, 1000);
         }
 
         function startRestTimer(restTime) {
@@ -95,10 +116,6 @@
             clearInterval(restInterval);
         }
 
-        function resumeTimer() {
-            // Aquí podrías implementar la lógica para resumir el temporizador si está pausado
-        }
-
         function completeTask() {
             clearInterval(workInterval);
             clearInterval(restInterval);
@@ -116,29 +133,29 @@
 </head>
 <body>
     <div class="container">
-        <h1 id="taskName">Task Name</h1>
+        <h1>Task: <span id="taskName">No Task</span></h1>
 
-        <!-- Work Session Section -->
+        <!-- Temporizador de sesión de trabajo -->
         <div class="timer">
             <p>Work Session Remaining: <span id="workTimeDisplay">00:00</span></p>
         </div>
 
-        <!-- Rest Session Section -->
+        <!-- Temporizador de descanso -->
         <div class="timer">
             <p>Rest Time Remaining: <span id="restTimeDisplay">00:00</span></p>
         </div>
 
-        <!-- Inputs (prellenados con valores de la URL si existen) -->
+        <!-- Inputs de tiempos (rellenados con los valores de la URL si existen) -->
         <label for="workTime">Work Time (minutes): </label>
         <input type="text" id="workTime" value="25"><br>
 
         <label for="restTime">Rest Time (minutes): </label>
         <input type="text" id="restTime" value="5"><br><br>
 
-        <!-- Botones de control -->
-        <button onclick="startTimer()">Start</button>
-        <button id="resume" onclick="resumeTimer()">Resume</button>
+        <!-- Botones de control del temporizador -->
+        <button id="start" onclick="startTimer()">Start Timer</button>
         <button id="pause" onclick="pauseTimer()">Pause</button>
+        <button id="resume" onclick="startTimer()">Resume</button>
         <button id="done" onclick="completeTask()">Done</button>
     </div>
 </body>

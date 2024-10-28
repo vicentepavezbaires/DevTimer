@@ -10,18 +10,23 @@
             text-align: center;
             background-color: #FFFFFF;
             color: #272E34;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
         }
         .container {
-            width: 350px;
-            margin: 0 auto;
             padding: 20px;
-            border: 2px solid #757575;
-            border-radius: 15px;
-            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
         }
         h1 {
             color: #F66135;
             font-size: 24px;
+        }
+        .session-time, .rest-time {
+            margin: 15px 0;
+            font-size: 22px;
+            color: #272E34;
         }
         .timer-display {
             font-size: 36px;
@@ -47,73 +52,76 @@
 <body>
 
     <div class="container">
-        <h1>DevTimer</h1>
-        <div class="timer-display" id="timer-display">25:00</div>
+        <h1>No Task</h1>
+        <div class="session-time">Work Session Remaining:</div>
+        <div class="timer-display" id="work-timer">00:00</div>
+        <div class="rest-time">Rest Time Remaining:</div>
+        <div class="timer-display" id="rest-timer">00:00</div>
         <div class="btn start-btn" id="start-btn">Start Timer</div>
         <div class="btn pause-btn" id="pause-btn">Pause</div>
         <div class="btn resume-btn" id="resume-btn">Resume</div>
-        <div class="btn done-btn" id="done-btn">Complete</div>
+        <div class="btn done-btn" id="done-btn">Done</div>
     </div>
 
     <script>
-        // Variables del temporizador
-        let totalTime = 25 * 60; // 25 minutos en segundos
-        let timeRemaining = totalTime;
-        let timerInterval;
-        const timerDisplay = document.getElementById('timer-display');
+        // Timer logic
+        let workTime = 25;
+        let restTime = 5;
+        let workInterval, restInterval;
 
-        // Función para actualizar la pantalla del temporizador
-        function updateTimerDisplay() {
-            const minutes = Math.floor(timeRemaining / 60);
-            const seconds = timeRemaining % 60;
-            timerDisplay.textContent = 
-                (minutes < 10 ? '0' : '') + minutes + ':' + 
-                (seconds < 10 ? '0' : '') + seconds;
-        }
+        const workTimerDisplay = document.getElementById('work-timer');
+        const restTimerDisplay = document.getElementById('rest-timer');
+        const startBtn = document.getElementById('start-btn');
+        const pauseBtn = document.getElementById('pause-btn');
+        const resumeBtn = document.getElementById('resume-btn');
+        const doneBtn = document.getElementById('done-btn');
 
-        // Función para iniciar el temporizador
         function startTimer() {
-            clearInterval(timerInterval);
-            timerInterval = setInterval(() => {
-                if (timeRemaining > 0) {
-                    timeRemaining--;
+            clearInterval(workInterval);
+            clearInterval(restInterval);
+            workTime = 25;  // Reset work timer
+            restTime = 5;  // Reset rest timer
+            updateTimerDisplay();
+            workInterval = setInterval(() => {
+                if (workTime > 0) {
+                    workTime--;
                     updateTimerDisplay();
                 } else {
-                    clearInterval(timerInterval);
-                    alert('¡Tiempo de trabajo completado!');
+                    clearInterval(workInterval);
+                    startRestTimer();
                 }
-            }, 1000);
+            }, 60000); // 1 minute intervals
         }
 
-        // Función para pausar el temporizador
-        function pauseTimer() {
-            clearInterval(timerInterval);
+        function startRestTimer() {
+            restInterval = setInterval(() => {
+                if (restTime > 0) {
+                    restTime--;
+                    updateTimerDisplay();
+                } else {
+                    clearInterval(restInterval);
+                    alert('Work session completed!');
+                }
+            }, 60000); // 1 minute intervals
         }
 
-        // Función para reanudar el temporizador
-        function resumeTimer() {
-            startTimer();
+        function updateTimerDisplay() {
+            workTimerDisplay.textContent = workTime < 10 ? '0' + workTime + ':00' : workTime + ':00';
+            restTimerDisplay.textContent = restTime < 10 ? '0' + restTime + ':00' : restTime + ':00';
         }
 
-        // Función para completar el temporizador inmediatamente
-        function completeTimer() {
-            clearInterval(timerInterval);
-            timeRemaining = 0;
-            updateTimerDisplay();
-            alert('Temporizador completado');
-        }
-
-        // Asignar eventos a los botones
-        document.getElementById('start-btn').addEventListener('click', () => {
-            timeRemaining = totalTime; // Reiniciar el tiempo
-            startTimer();
+        startBtn.addEventListener('click', startTimer);
+        pauseBtn.addEventListener('click', () => {
+            clearInterval(workInterval);
+            clearInterval(restInterval);
         });
-        document.getElementById('pause-btn').addEventListener('click', pauseTimer);
-        document.getElementById('resume-btn').addEventListener('click', resumeTimer);
-        document.getElementById('done-btn').addEventListener('click', completeTimer);
+        resumeBtn.addEventListener('click', startTimer);
+        doneBtn.addEventListener('click', () => {
+            clearInterval(workInterval);
+            clearInterval(restInterval);
+            alert('Task marked as done!');
+        });
 
-        // Actualizar la pantalla inicialmente
-        updateTimerDisplay();
     </script>
 
 </body>

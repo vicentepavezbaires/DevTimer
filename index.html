@@ -37,8 +37,8 @@
             color: #272E34;
         }
         .btn {
-            width: 100%; /* Ocupa el 100% del contenedor para centrar */
-            max-width: 300px; /* Ancho máximo para que no se extienda demasiado */
+            width: 100%;
+            max-width: 300px;
             padding: 10px;
             font-size: 18px;
             margin: 10px auto;
@@ -56,7 +56,7 @@
 <body>
 
     <div class="container">
-        <h1>No Task</h1>
+        <h1>Task Timer</h1>
         <div class="session-time">Work Session Remaining:</div>
         <div class="timer-display" id="work-timer">00:00</div>
         <div class="rest-time">Rest Time Remaining:</div>
@@ -68,10 +68,12 @@
     </div>
 
     <script>
-        // Timer logic
-        let workTime = 25;
-        let restTime = 5;
+        // Timer and metric variables
+        let workTime = 25 * 60; // in seconds
+        let restTime = 5 * 60; // in seconds
         let workInterval, restInterval;
+        let workSessionsCompleted = 0, shortBreaksTaken = 0, totalTimeSpent = 0;
+        let sessionStartDate = new Date();
 
         const workTimerDisplay = document.getElementById('work-timer');
         const restTimerDisplay = document.getElementById('rest-timer');
@@ -83,35 +85,49 @@
         function startTimer() {
             clearInterval(workInterval);
             clearInterval(restInterval);
-            workTime = 25;  // Reset work timer
-            restTime = 5;  // Reset rest timer
+            workTime = 25 * 60;
+            restTime = 5 * 60;
             updateTimerDisplay();
-            workInterval = setInterval(() => {
-                if (workTime > 0) {
-                    workTime--;
-                    updateTimerDisplay();
-                } else {
-                    clearInterval(workInterval);
-                    startRestTimer();
-                }
-            }, 60000); // 1 minute intervals
+            workInterval = setInterval(workCountdown, 1000);
+        }
+
+        function workCountdown() {
+            if (workTime > 0) {
+                workTime--;
+                totalTimeSpent++;
+                updateTimerDisplay();
+            } else {
+                clearInterval(workInterval);
+                workSessionsCompleted++;
+                startRestTimer();
+            }
         }
 
         function startRestTimer() {
-            restInterval = setInterval(() => {
-                if (restTime > 0) {
-                    restTime--;
-                    updateTimerDisplay();
-                } else {
-                    clearInterval(restInterval);
-                    alert('Work session completed!');
-                }
-            }, 60000); // 1 minute intervals
+            restInterval = setInterval(restCountdown, 1000);
+        }
+
+        function restCountdown() {
+            if (restTime > 0) {
+                restTime--;
+                totalTimeSpent++;
+                updateTimerDisplay();
+            } else {
+                clearInterval(restInterval);
+                shortBreaksTaken++;
+                alert('Work session completed!');
+            }
         }
 
         function updateTimerDisplay() {
-            workTimerDisplay.textContent = workTime < 10 ? '0' + workTime + ':00' : workTime + ':00';
-            restTimerDisplay.textContent = restTime < 10 ? '0' + restTime + ':00' : restTime + ':00';
+            workTimerDisplay.textContent = formatTime(workTime);
+            restTimerDisplay.textContent = formatTime(restTime);
+        }
+
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            return `${minutes < 10 ? '0' : ''}${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
         }
 
         startBtn.addEventListener('click', startTimer);
@@ -119,13 +135,27 @@
             clearInterval(workInterval);
             clearInterval(restInterval);
         });
-        resumeBtn.addEventListener('click', startTimer);
+        resumeBtn.addEventListener('click', () => {
+            if (workTime > 0) {
+                workInterval = setInterval(workCountdown, 1000);
+            } else if (restTime > 0) {
+                restInterval = setInterval(restCountdown, 1000);
+            }
+        });
+
         doneBtn.addEventListener('click', () => {
             clearInterval(workInterval);
             clearInterval(restInterval);
-            alert('Task marked as done!');
+            const endDate = new Date();
+            const daysTaken = Math.ceil((endDate - sessionStartDate) / (1000 * 60 * 60 * 24));
+            const finishedBeforeDeadline = daysTaken <= 1; // Adjust as per your deadline logic
+            alert(`Task Summary:
+                Work Sessions Completed: ${workSessionsCompleted}
+                Short Breaks Taken: ${shortBreaksTaken}
+                Total Time Spent: ${Math.floor(totalTimeSpent / 60)} minutes
+                Days Taken: ${daysTaken}
+                Finished Before Deadline: ${finishedBeforeDeadline}`);
         });
-
     </script>
 
 </body>
